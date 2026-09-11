@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Terod — компьютерный клуб</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0b;
+            color: #f1f1f1;
+            overflow-x: hidden;
+        }
+
+        /* ---------- ОБЩЕЕ ---------- */
+
+        .page {
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            width: min(1200px, 90%);
+            margin: 0 auto;
+        }
+
+        /* ---------- ФОНОВЫЙ ЭФФЕКТ ---------- */
+
+        .noise {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 20;
+            opacity: .035;
+            background-image:
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+        }
+
+        .glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.04);
+            filter: blur(100px);
+            pointer-events: none;
+        }
+
+        .glow.one {
+            top: -200px;
+            left: -150px;
+        }
+
+        .glow.two {
+            right: -200px;
+            bottom: -150px;
+            background: rgba(150,150,150,.06);
+        }
+
+        /* ---------- НАВИГАЦИЯ ---------- */
+
+        nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            padding: 28px 0;
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: #fff;
+        }
+
+        .nav-label {
+            color: #888;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* ---------- ПЕРВАЯ СТРАНИЦА ---------- */
+
+        #home {
+            display: flex;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .hero-image {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(5,5,6,.96) 0%,
+                    rgba(5,5,6,.82) 35%,
+                    rgba(5,5,6,.45) 70%,
+                    rgba(5,5,6,.85) 100%
+                ),
+                linear-gradient(
+                    0deg,
+                    rgba(5,5,6,.9),
+                    transparent 50%,
+                    rgba(5,5,6,.55)
+                ),
+                url("images/club1.jpg") center/cover no-repeat;
+
+            filter: grayscale(75%);
+            transform: scale(1.04);
+            animation: heroZoom 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes heroZoom {
+            from {
+                transform: scale(1.04);
+            }
+            to {
+                transform: scale(1.1);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 850px;
+            padding-top: 40px;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 25px;
+            animation: fadeUp .8s ease forwards;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 38px;
+            height: 1px;
+            background: #aaa;
+        }
+
+        .hero-title {
+            font-size: clamp(80px, 15vw, 190px);
+            line-height: .82;
+            font-weight: 900;
+            letter-spacing: -10px;
+            color: #f5f5f5;
+            text-transform: uppercase;
+            animation: fadeUp 1s .1s ease both;
+        }
+
+        .hero-subtitle {
+            margin-top: 40px;
+            max-width: 490px;
+            color: #aaa;
+            line-height: 1.7;
+            font-size: 15px;
+            animation: fadeUp 1s .2s ease both;
+        }
+
+        .hero-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 25px;
+            margin-top: 45px;
+            padding: 18px 25px;
+            color: #111;
+            background: #e9e9e9;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: .35s ease;
+            animation: fadeUp 1s .3s ease both;
+        }
+
+        .hero-button span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #777;
+            border-radius: 50%;
+            transition: .35s ease;
+        }
+
+        .hero-button:hover {
+            background: #fff;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255,255,255,.12);
+        }
+
+        .hero-button:hover span {
+            transform: rotate(45deg);
+        }
+
+        /* ---------- ДЕКОР ---------- */
+
+        .side-text {
+            position: absolute;
+            right: 30px;
+            bottom: 40px;
+            writing-mode: vertical-rl;
+            color: #555;
+            font-size: 10px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        .scroll {
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 9px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ---------- ВТОРАЯ СТРАНИЦА ---------- */
+
+        #info {
+            background:
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,.05), transparent 25%),
+                #111113;
+            padding: 130px 0 100px;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .section-label {
+            color: #777;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: clamp(45px, 7vw, 85px);
+            line-height: .95;
+            letter-spacing: -4px;
+            font-weight: 800;
+        }
+
+        .address {
+            text-align: right;
+        }
+
+        .address small {
+            display: block;
+            color: #666;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .address strong {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        /* ---------- ФОТО-БЛОКИ ---------- */
+
+        .photo-strip {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 8px;
+            height: 260px;
+            margin-bottom: 80px;
+        }
+
+        .photo {
+            position: relative;
+            overflow: hidden;
+            background: #222;
+        }
+
+        .photo::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,.38);
+            transition: .4s ease;
+        }
+
+        .photo:hover::after {
+            background: rgba(0,0,0,.15);
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(80%);
+            opacity: .75;
+            transition: .7s ease;
+        }
+
+        .photo:hover img {
+            transform: scale(1.08);
+            filter: grayscale(30%);
+            opacity: .95;
+        }
+
+        /* ---------- ПРАЙС ---------- */
+
+        .price-title {
+            font-size: 14px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .price-list {
+            border-top: 1px solid #333;
+        }
+
+        .price-item {
+            display: grid;
+            grid-template-columns: 70px 1fr auto;
+            align-items: center;
+            gap: 30px;
+            padding: 28px 10px;
+            border-bottom: 1px solid #2b2b2d;
+            transition: .35s ease;
+        }
+
+        .price-item:hover {
+            background: #18181a;
+            padding-left: 20px;
+        }
+
+        .price-number {
+            color: #555;
+            font-size: 13px;
+        }
+
+        .price-name {
+            font-size: clamp(20px, 3vw, 30px);
+            font-weight: 600;
+        }
+
+        .price-name span {
+            display: block;
+            margin-top: 6px;
+            font-size: 10px;
+            color: #666;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .price {
+            font-size: clamp(19px, 3vw, 28px);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* ---------- КНОПКА НАЗАД ---------- */
+
+        .back-button {
+            display: inline-flex;
+            margin-top: 55px;
+            padding: 14px 20px;
+            border: 1px solid #333;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: .3s;
+        }
+
+        .back-button:hover {
+            color: white;
+            border-color: #777;
+            background: #191919;
+        }
+
+        /* ---------- FOOTER ---------- */
+
+        footer {
+            padding: 35px 0;
+            border-top: 1px solid #242426;
+            background: #0c0c0d;
+            color: #555;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        footer .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* ---------- АНИМАЦИИ ---------- */
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(35px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity .8s ease, transform .8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ---------- АДАПТИВ ---------- */
+
+        @media (max-width: 700px) {
+
+            nav {
+                padding: 20px 0;
+            }
+
+            .nav-label {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 22vw;
+                letter-spacing: -5px;
+            }
+
+            .hero-subtitle {
+                font-size: 13px;
+                max-width: 90%;
+            }
+
+            .side-text {
+                display: none;
+            }
+
+            .scroll {
+                display: none;
+            }
+
+            #info {
+                padding: 100px 0 60px;
+            }
+
+            .info-header {
+                display: block;
+                margin-bottom: 45px;
+            }
+
+            .address {
+                text-align: left;
+                margin-top: 30px;
+            }
+
+            .photo-strip {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .photo {
+                height: 180px;
+            }
+
+            .price-item {
+                grid-template-columns: 35px 1fr;
+                gap: 15px;
+            }
+
+            .price {
+                grid-column: 2;
+                margin-top: -8px;
+            }
+
+            footer .container {
+                display: block;
+            }
+
+            footer .container div + div {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<!-- ================= ПЕРВАЯ СТРАНИЦА ================= -->
+
+<section id="home" class="page">
+
+    <div class="hero-image"></div>
+
+    <div class="glow one"></div>
+    <div class="glow two"></div>
+
+    <nav>
+        <div class="container nav-inner">
+            <div class="logo">TEROD</div>
+            <div class="nav-label">Computer Club / Almaty</div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-content">
+
+            <div class="eyebrow">
+                Computer Club
+            </div>
+
+            <h1 class="hero-title">
+                TEROD
+            </h1>
+
+            <p class="hero-subtitle">
+                Место, где технологии встречаются с комфортом.
+                Мощные игровые компьютеры, современная атмосфера
+                и пространство для тех, кто играет на результат.
+            </p>
+
+            <a href="#info" class="hero-button">
+                Посмотреть информацию
+                <span>↗</span>
+            </a>
+
+        </div>
+    </div>
+
+    <div class="side-text">
+        EST. TEROD
+    </div>
+
+    <div class="scroll">
+        Scroll to explore
+    </div>
+
+</section>
+
+
+<!-- ================= ВТОРАЯ СТРАНИЦА ================= -->
+
+<section id="info" class="page">
+
+    <div class="container">
+
+        <div class="info-header reveal">
+
+            <div>
+                <div class="section-label">
+                    01 — Location
+                </div>
+
+                <h2 class="section-title">
+                    TEROD<br>
+                    INFO
+                </h2>
+            </div>
+
+            <div class="address">
+                <small>Наш адрес</small>
+                <strong>Жарокова, 41</strong>
+            </div>
+
+        </div>
+
+
+        <!-- ФОТОГРАФИИ -->
+
+        <div class="photo-strip reveal">
+
+            <div class="photo">
+                <img src="images/club1.jpg" alt="Компьютерный клуб Terod">
+            </div>
+
+            <div class="photo">
+                <img src="images/club2.jpg" alt="Игровые компьютеры Terod">
+            </div>
+
+            <div class="photo">
+                <img src="images/club3.jpg" alt="Зона компьютеров Terod">
+            </div>
+
+        </div>
+
+
+        <!-- ПРАЙС -->
+
+        <div class="reveal">
+
+            <div class="price-title">
+                02 — Price list
+            </div>
+
+            <div class="price-list">
+
+                <div class="price-item">
+
+                    <div class="price-number">
+                        01
+                    </div>
+
+                    <div class="price-name">
+                        Стандарт
+                        <span>Для комфортной игры</span>
+                    </div>
+
+                    <div class="price">
+                        1 400 ₸
+                        <small>/час</small>
+                    </div>
+
+                </div>
+
+
+                <div class="price-item">
+
+                    <div class="price-number">
+                        02
+                    </div>
+
+                    <div class="price-name">
+                        Премиум
+                        <span>Больше мощности — больше возможностей</span>
+                    </div>
+
+                    <div class="price">
+                        2 000 ₸
+                        <small>/час</small>
+                    </div>
+
+                </div>
+
+
+                <div class="price-item">
+
+                    <div class="price-number">
+                        03
+                    </div>
+
+                    <div class="price-name">
+                        Bootcamp
+                        <span>Максимальный уровень</span>
+                    </div>
+
+                    <div class="price">
+                        2 400 ₸
+                        <small>/час</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <a href="#home" class="back-button reveal">
+            ↑ Вернуться наверх
+        </a>
+
+    </div>
+
+</section>
+
+
+<footer>
+    <div class="container">
+        <div>© 2026 TEROD</div>
+        <div>Computer Club · Almaty</div>
+    </div>
+</footer>
+
+
+<script>
+
+    // Плавное появление элементов при прокрутке
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+
+            });
+
+        },
+        {
+            threshold: 0.15
+        }
+    );
+
+
+    document
+        .querySelectorAll('.reveal')
+        .forEach(element => observer.observe(element));
+
+
+    // Плавная навигация
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+
+        link.addEventListener('click', function(e) {
+
+            const target = document.querySelector(
+                this.getAttribute('href')
+            );
+
+            if (target) {
+
+                e.preventDefault();
+
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+
+            }
+
+        });
+
+    });
+
+
+    // Небольшой эффект движения фоновой фотографии мышью
+
+    const hero = document.querySelector('.hero-image');
+
+    document.addEventListener('mousemove', (e) => {
+
+        const x = (e.clientX / window.innerWidth - .5) * 10;
+        const y = (e.clientY / window.innerHeight - .5) * 10;
+
+        hero.style.transform =
+            `scale(1.06) translate(${x}px, ${y}px)`;
+
+    });
+
+</script>
+
+</body>
+</html>
